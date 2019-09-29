@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from django.conf import settings
+from django.contrib import messages
 from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import pgettext, ugettext
@@ -59,10 +60,18 @@ class Twilio(object):
 
     def send_sms(self, device, token):
         body = ugettext('Your authentication token is %s') % token
-        self.client.messages.create(
-            to=device.number.as_e164,
-            from_=getattr(settings, 'TWILIO_CALLER_ID'),
-            body=body)
+        try:
+          self.client.messages.create(
+              to=device.number.as_e164,
+              from_=getattr(settings, 'TWILIO_CALLER_ID'),
+              body=body)
+        except Exception:
+            twilio_error_message =  getattr(settings, 'TWILIO_ERROR_MESSAGE', None)
+            if twilio_error_message:
+                request = get_current_request()
+                messages.add_message(request, messages.ERROR, twilio_error_message)
+            else:
+                raise
 
 
 def validate_voice_locale(locale):
