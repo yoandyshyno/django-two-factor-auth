@@ -5,6 +5,7 @@
 # Additional runtime dependencies
 
 twilio
+phonenumberslite
 
 # Example app
 
@@ -19,7 +20,6 @@ flake8
 tox
 tox-pyenv
 detox
-mock
 isort
 
 # Translation
